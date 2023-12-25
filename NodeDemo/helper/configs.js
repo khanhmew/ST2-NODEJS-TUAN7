@@ -1,4 +1,4 @@
-module.exports = {
-  SECRET_KEY: "heheheehe",
-  EXP: "20d",
-};
+module.exports= {
+    SECRET_KEY:"heheheehe",
+    EXP: '20d'
+}
