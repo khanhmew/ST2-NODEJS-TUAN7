@@ -42,10 +42,10 @@ module.exports = {
             throw error;
         }
     },
-    findByIdAndUpdate: async function (productId, updateData) {
+    findByIdAndUpdate: async function (departmentId, updateData) {
         try {
             const updatedDepartment = await SchemaDepartment.findByIdAndUpdate(
-                productId,
+                departmentId,
                 updateData,
                 { new: true }
             );
