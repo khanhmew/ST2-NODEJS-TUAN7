@@ -17,7 +17,7 @@ router.get("/:id", async function (req, res, next) {
   // get by ID
   try {
     console.log(`ID: ${req.params.id}`);
-    var product = await modelDepartment.getOne(req.params.id);
+    var product = await modelDepartment.getbyID(req.params.id);
     responseData.responseReturn(res, 200, true, product);
   } catch (error) {
     console.log(`ERROR: ${error}`);
@@ -80,7 +80,7 @@ router.delete("/delete/:id", async function (req, res, next) {
   try {
     const idDelete = req.params.id;
     console.log(`ID: ${idDelete}`);
-    var department = await modelDepartment.deleteById(idDelete);
+    var department = await modelDepartment.delete(idDelete);
     console.log(`After delete: ${department}`);
     if (!department)
       responseData.responseReturn(res, 404, false, "khong tim thay department");
