@@ -10,7 +10,6 @@ const {validationResult} = require('express-validator');
 
 
 
-
 router.get('/', async function (req, res, next) {
   console.log(req.query);
   var usersAll = await modelUser.getall(req.query);
@@ -61,5 +60,6 @@ router.delete('/delete/:id', function (req, res, next) {//delete by Id
     responseData.responseReturn(res, 404, false, "khong tim thay user");
   }
 });
+
 
 module.exports = router;

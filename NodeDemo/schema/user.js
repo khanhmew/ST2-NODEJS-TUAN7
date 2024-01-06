@@ -2,19 +2,33 @@ var mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const configs = require('../helper/configs')
+const crypto = require('crypto');
 
 const schema = new mongoose.Schema({
     email: String,
     userName: String,
     password: String,
-    role: String
+    role: String,
+    tokenForgot:String,
+    tokenForgotExp:String
 });
 
-schema.pre('save', function () {
+schema.pre('save', function (next) {
+    if(!this.isModified("password")){
+        return next();
+    }
     const salt = bcrypt.genSaltSync(10);
     this.password = bcrypt.hashSync(this.password, salt);
-    //bug sinh ra khi change password
+    next();
 })
+
+schema.methods.addTokenForgotPassword= function(){
+    var tokenForgot = crypto.randomBytes(31).toString('hex');
+    this.tokenForgot = tokenForgot;
+    this.tokenForgotExp = Date.now()+15*60*1000;
+    return tokenForgot;
+}
+
 
 schema.methods.getJWT = function () {
     var token = jwt.sign({ id: this._id }, configs.SECRET_KEY,

@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 const configs = require('../helper/configs');
 const { checkLogin , checkRole} = require('../middlewares/protect');
+const sendmail = require('../helper/sendmail');
 
 router.post('/register', validate.validator(),
   async function (req, res, next) {
@@ -38,12 +39,55 @@ router.post('/login', async function (req, res, next) {
   }
   console.log(result);
   var token = result.getJWT();
-  res.cookie('tokenJWT',token);
+  res.cookie('tokenJWT',token,{
+    expires:new Date(Date.now()+2*24*3600*1000),
+    httpOnly:true
+  });
   responseData.responseReturn(res, 200, true, token);
 });
 router.get('/me', checkLogin,checkRole, async function (req, res, next) {//get all
   var user = await modelUser.getOne(req.userID);
   res.send({ "done": user});
 });
+
+router.get('/logout', async function(req, res, next){
+  res.cookie('tokenJWT','none',{
+    expires:new Date(Date.now()+1000),
+    httpOnly:true
+  });
+  responseData.responseReturn(res, 200, true, 'logout thanh cong');
+})
+
+
+
+router.post('/forgetPassword', async function(req, res, next){
+  var email = req.body.email;
+  var user = await modelUser.getByEmail(email);
+  if(!user){
+    return ;//return loi
+  }
+  console.log(user);
+  user.addTokenForgotPassword();
+  await user.save();
+  try {
+    sendmail.send(user.email,user.tokenForgot);
+    responseData.responseReturn(res, 200, true,'gui mail thanh cong');
+  } catch (error) {
+    user.tokenForgot = undefined;
+    user.tokenForgotExp = undefined;
+    responseData.responseReturn(res, 400, true,'gui mail loi vui long thu lai'+error);
+  }  
+  return;
+})
+
+router.post('/resetPassword/:token', async function(req, res, next){
+   var token = req.params.token;
+   var password = req.body.password;
+   var user = await modelUser.getByTokenForgot(token);
+   user.password = password;
+   user.tokenForgot = undefined;
+   user.tokenForgotExp = undefined;
+   await user.save();
+})
 
 module.exports = router;
