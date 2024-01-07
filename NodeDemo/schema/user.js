@@ -10,7 +10,11 @@ const schema = new mongoose.Schema({
     password: String,
     role: String,
     tokenForgot:String,
-    tokenForgotExp:String
+    tokenForgotExp:String,
+    department_k:{
+        type:mongoose.Schema.ObjectId,
+        ref:'department'
+    }
 });
 
 schema.pre('save', function (next) {
