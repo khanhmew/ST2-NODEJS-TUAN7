@@ -78,7 +78,7 @@ router.put("/edit/:id", validate.validate(["name"]), async function (req, res, n
       return;
     }
 
-    const updatedProducts = await modelCategory.updateProduct(
+    const updatedProducts = await modelCategory.updateCategory(
       req.params.id,
       req.body
     );
@@ -99,7 +99,7 @@ router.delete("/delete/:id", async function (req, res, next) {
   try {
     const idDelete = req.params.id;
     console.log(`ID: ${idDelete}`);
-    var deletedProducts = await modelCategory.deleteProduct(idDelete);
+    var deletedProducts = await modelCategory.deleteCategory(idDelete);
     console.log(`After delete: ${deletedProducts}`);
     
     if (!deletedProducts) {
